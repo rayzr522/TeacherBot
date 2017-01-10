@@ -1,17 +1,17 @@
 const Discord = require('discord.js');
+const LessonManager = require('./lessons');
 const path = require('path');
 const chalk = require('chalk');
 const fs = require('fs');
 const fse = require('fs-extra');
+const read = require('fs-readdir-recursive');
+const {log} = require('./debug');
 
 const bot = new Discord.Client();
 const commands = bot.commands = {};
+const lessons = bot.lessons = new LessonManager();
 
 let invite_template = 'https://discordapp.com/api/oauth2/authorize?client_id=YOUR_CLIENT_ID&scope=bot&permissions=469822582';
-
-function log(msg) {
-    console.log(chalk.green.bold('[TeacherBot]') + ' ' + msg);
-}
 
 try {
     if (!fs.existsSync(path.resolve(__dirname, 'config.json'))) {
@@ -42,22 +42,40 @@ function validateCommand(command) {
 }
 
 function loadCommands() {
-    fs.readdirSync(path.resolve(__dirname, 'commands')).forEach(file => {
-        if (file.startsWith('_') || !file.endsWith('.js')) return;
+    read(path.resolve(__dirname, 'commands'), file => !file.startsWith('_') && file.endsWith('.js')).forEach(file => {
+        // if (file.startsWith('_') || !file.endsWith('.js')) return;
         var command = require(path.resolve(__dirname, 'commands', file));
         var check = validateCommand(command);
         if (check) {
             log(`Error in "${file}": ${chalk.red(check)}`);
             return;
         }
+        if (commands[command.info.name]) {
+            log(`Duplicate command: An entry already exists for command ${chalk.red(command.info.name)} in file "${file}"`);
+        }
         commands[command.info.name] = command;
     });
 }
 
+
+
+function time(callback) {
+    let start = process.hrtime();
+    callback();
+    let diff = process.hrtime(start);
+    return (diff[0] + diff[1] / 1e6).toFixed(2);
+}
+
 bot.on('ready', () => {
     log('Loading commands...');
-    loadCommands();
-    log('Commands loaded.');
+    var loadTime = time(loadCommands);
+    log(`Commands loaded in ${loadTime}ms.`);
+
+    log('Loading lessons...');
+    loadTime = time(() => lessons.loadLessons(path.resolve(__dirname, '../lessons/')));
+    log(`Lessons loaded in ${loadTime}ms.`);
+
+    log('Lessons:\n' + lessons.getLessons().map(l => '- ' + l.name).join('\n'));
 
     bot.user.setAvatar(path.resolve(__dirname, '../avatar.png'));
 

@@ -7,7 +7,8 @@ var bot;
 
 const paths = {
     srcFiles: 'src/**/!(_)*.js',
-    configs: 'src/**/!(_)*.json'
+    configs: 'src/**/!(_)*.json',
+    lessons: 'lessons/**/!(_)lesson-*.json'
 };
 
 gulp.task('lint', () => {
@@ -30,9 +31,10 @@ gulp.task('main', ['lint'], () => {
 gulp.task('watch', () => {
     gulp.watch([
         paths.srcFiles,
-        paths.configs
+        paths.configs,
+        paths.lessons
     ], ['main']);
-})
+});
 
 gulp.task('default', ['main', 'watch']);
 

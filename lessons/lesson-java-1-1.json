@@ -1,0 +1,28 @@
+{
+    "id": "java-1-1",
+    "name": "Lesson One - Blah Blah",
+    "required": {
+        "quiz": {
+            "attempt": true,
+            "pass": false
+        },
+        "exercise": {
+            "attempt": false,
+            "pass": false
+        },
+        "lessons": [
+            "java-1-0"
+        ]
+    },
+    "lesson": [
+        "msg one",
+        "msg two"
+    ],
+    "quiz": [
+        "_message one_",
+        "**q2**"
+    ],
+    "exercise": [
+        "`blah`"
+    ]
+}
