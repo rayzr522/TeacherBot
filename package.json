@@ -1,7 +1,7 @@
 {
   "name": "teacher-bot",
   "version": "1.0.0",
-  "description": "A Discord.js bot for teaching things",
+  "description": "A Discord.js bot for teachers",
   "main": "src/bot.js",
   "repository": "https://github.com/Rayzr522/TeacherBot",
   "author": "Rayzr",
